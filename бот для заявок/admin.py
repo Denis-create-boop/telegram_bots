@@ -1,18 +1,19 @@
 import telebot
-from table import Table
+from table import Applications
+from telebot.types import InputMediaPhoto
 
 
 TOKEN = "8018531675:AAHnItWE4t-ujEqPFe-0vCaFggdeY017re0"
 bot = telebot.TeleBot(TOKEN)
 
-id_admin = 5276576528_0
 
+id_admin = 5276576528_0
 user_id = None
 old_number = 0
 
 admin_buttons = [
     "start",
-    "Посмотреть все заявки",
+    "👁Посмотреть все заявки👁",
     "изменить статус заявки",
     "удалить заявку",
     "посмотреть оценку заявки",
@@ -35,7 +36,7 @@ user_buttons = [
 ]
 
 user_handlers = [
-    "start",
+    #"start",
     "📩Не могу зайти в почту📩",
     "☁️Не могу зайти на портал☁️",
     "Не работает комп🤬🤬",
@@ -64,16 +65,19 @@ def admin(message):
     @bot.message_handler(func=lambda message: str(message.text).lower() == "start")
     def wellcome(message):
 
-        global admin_buttons
+        global admin_buttons, photo
         chat_id = message.chat.id
         keyboard = telebot.types.ReplyKeyboardMarkup()
-        
+
         for button in admin_buttons:
             button_save = telebot.types.InlineKeyboardButton(text=button)
             keyboard.add(button_save)
-
+        with open("images/avatar_main.jpg", "rb") as photo:
+            bot.send_media_group(chat_id, [InputMediaPhoto(photo)])
         bot.send_message(
-            chat_id, f"Добро пожаловать в бот ДВП Воронеж ЦО", reply_markup=keyboard
+            chat_id,
+            "Добро пожаловать в бот ДВП Воронеж ЦО",
+            reply_markup=keyboard
         )
 
     # функция для просмотра оценки заявки
@@ -89,35 +93,38 @@ def admin(message):
 
         def get_grade(message):
             number = message.text
-            objects = Table()
+            objects = Applications()
             grade = objects.get_grade(number)
             bot.send_message(chat_id, f"Оценка заявки под номером {number} - {grade}")
 
         get_number(message)
 
     # фугкция для просмотра всех заявок
-    @bot.message_handler(func=lambda message: message.text == "Посмотреть все заявки")
+    @bot.message_handler(func=lambda message: message.text == "👁Посмотреть все заявки👁")
     def show_all(message):
         chat_id = message.chat.id
-        objects = Table()
-        objects = objects.show_all()
-        ls_answer = ["id", "номер заявки", "логин", "проблема", "статус", "оценка"]
-        ls_send = []
-        for row in objects:
-            send = ""
-            for i in range(6):
-                send += f"{ls_answer[i]}: {row[i]}\n"
+        try:
+            objects = Applications()
+            objects = objects.show_all()
+            ls_answer = ["id", "номер заявки", "логин", "проблема", "статус", "оценка"]
+            ls_send = []
+            for row in objects:
+                send = ""
+                for i in range(6):
+                    send += f"{ls_answer[i]}: {row[i]}\n"
 
-            ls_send.append(send)
-        for i in ls_send:
-            bot.send_message(chat_id, i)
+                ls_send.append(send)
+            for i in ls_send:
+                bot.send_message(chat_id, i)
+        except:
+            bot.send_message(chat_id, "В базе данных пока нет ниодной заявки")
 
     # функция для изменения статуса заявки
     @bot.message_handler(func=lambda message: message.text == "изменить статус заявки")
     def change_status(message):
         global old_number
         chat_id = message.chat.id
-        objects = Table()
+        objects = Applications()
         old_status = ""
 
         status_buttons = [
@@ -188,7 +195,7 @@ def admin(message):
     # функция для удаления заявки из бд
     def delete_questions(message):
         number = 0
-        objects = Table()
+        objects = Applications()
 
         def start_delete(message):
             chat_id = message.chat.id
@@ -199,7 +206,7 @@ def admin(message):
             nonlocal number, objects
             chat_id = message.chat.id
             number = message.text
-            answer_bd = objects.get_question(number)
+            answer_bd = objects.get_application(number)
             ls_answer = []
             for row in answer_bd:
                 ls_answer.append(row)
@@ -236,7 +243,7 @@ def admin(message):
             if str(message.text).lower() == "нет":
                 bot.send_message(chat_id, "Удаление отменено")
             elif str(message.text).lower() == "да":
-                objects.del_question(number)
+                objects.del_application(number)
                 bot.send_message(
                     chat_id, f"Заявка номер {number}, успешно удалина из базы данных"
                 )
@@ -272,8 +279,7 @@ def admin(message):
                 "Спасибо за честную оценку, мы постораемся улучшить наше обслуживание",
                 reply_markup=keyboard,
             )
-        objects = Table()
+        objects = Applications()
         user_id = objects.get_user_id(old_number)
         objects.set_grade(old_number, grade)
         bot.register_next_step_handler(message, wellcome)
-

@@ -1,26 +1,26 @@
 import sqlite3
 
 
-class Table:
+class Applications:
     """Класс для работы с заявками в бд"""
-    def __init__(self, user=None, question=None, status=None, user_id=None):
+    def __init__(self, user=None, application=None, status=None, user_id=None):
         self.user = user
-        self.question = question
+        self.application = application
         self.status = status
         self.user_id = user_id
 
     # соеденение с базой данных  с помощью слова connect
-    def write_question(self):
+    def write_application(self):
         with sqlite3.connect('./database.db') as db:
 
             # создание таблицы в бд
             cursor = db.cursor()
-            query = """ CREATE TABLE IF NOT EXISTS questions(id INTEGER, номер INTEGER, логин TEXT, проблема TEXT, статус TEXT, оценка INTEGER, user_id INTEGER) """
+            query = """ CREATE TABLE IF NOT EXISTS applications(id INTEGER, номер INTEGER, логин TEXT, проблема TEXT, статус TEXT, оценка INTEGER, user_id INTEGER) """
             cursor.execute(query)
 
             # получаем последний id из бд
             def get_id():
-                query = """ SELECT MAX(id) FROM questions """
+                query = """ SELECT MAX(id) FROM applications """
                 cursor.execute(query)
                 id = 0
                 for row in cursor:
@@ -31,11 +31,11 @@ class Table:
                 return id
 
             # заполнение таблицы в бд
-            def write(id, user, number, question, status, user_id):
+            def write(id, user, number, application, status, user_id):
 
                 cursor = db.cursor()
-                query = """ INSERT INTO questions(id, номер, логин, проблема, статус, user_id) VALUES(?, ?, ?, ?, ?, ?) """
-                insert_payments = [(id, number, user, question, status, user_id)]
+                query = """ INSERT INTO applications(id, номер, логин, проблема, статус, user_id) VALUES(?, ?, ?, ?, ?, ?) """
+                insert_payments = [(id, number, user, application, status, user_id)]
                 cursor.executemany(query, insert_payments)
 
                 # перед закрытием обязательно нужно закомитить
@@ -43,7 +43,7 @@ class Table:
             id = get_id()
             number = id
 
-            write(id, self.user, number, self.question, self.status, self.user_id)
+            write(id, self.user, number, self.application, self.status, self.user_id)
 
             return number
 
@@ -52,7 +52,7 @@ class Table:
         with sqlite3.connect('./database.db') as db:
 
             cursor = db.cursor()
-            query = """ SELECT * FROM questions """
+            query = """ SELECT * FROM applications """
             cursor.execute(query)
             return cursor
 
@@ -61,7 +61,7 @@ class Table:
         with sqlite3.connect("./database.db") as db:
 
             cursor = db.cursor()
-            query = f""" SELECT оценка FROM questions WHERE номер == {number}"""
+            query = f""" SELECT оценка FROM applications WHERE номер == {number}"""
             cursor.execute(query)
             for row in cursor:
                 return row[0]
@@ -71,7 +71,7 @@ class Table:
         with sqlite3.connect("./database.db") as db:
 
             cursor = db.cursor()
-            query = """ UPDATE questions SET оценка = ? WHERE номер == ? """
+            query = """ UPDATE applications SET оценка = ? WHERE номер == ? """
             cursor.executemany(
                 query,
                 [
@@ -88,7 +88,7 @@ class Table:
         with sqlite3.connect("./database.db") as db:
 
             cursor = db.cursor()
-            query = f""" SELECT user_id FROM questions WHERE номер == {number} """
+            query = f""" SELECT user_id FROM applications WHERE номер == {number} """
             cursor.execute(query)
             for row in cursor:
                 return row[0]
@@ -99,7 +99,7 @@ class Table:
         with sqlite3.connect('./database.db') as db:
 
             cursor = db.cursor()
-            query = f""" SELECT статус FROM questions WHERE номер == {number} """
+            query = f""" SELECT статус FROM applications WHERE номер == {number} """
             cursor.execute(query)
             for row in cursor:
                 return row
@@ -109,24 +109,25 @@ class Table:
         with sqlite3.connect('./database.db') as db:
 
             cursor = db.cursor()
-            query = """ UPDATE questions SET статус = ? WHERE номер == ? """
+            query = """ UPDATE applications SET статус = ? WHERE номер == ? """
             cursor.executemany(query, [(status, number,)])
             db.commit()
 
     # получаем заявку
-    def get_question(self, number):
+    def get_application(self, number):
         with sqlite3.connect('./database.db') as db:
 
             cursor = db.cursor()
-            query = f""" SELECT * FROM questions WHERE номер == {number} """
+            query = f""" SELECT * FROM applications WHERE номер == {number} """
             cursor.execute(query)
             return cursor
 
     # удаляем заявку из бд
-    def del_question(self, number):
+    def del_application(self, number):
         with sqlite3.connect('./database.db') as db:
 
             cursor = db.cursor()
-            query = f""" DELETE FROM questions WHERE номер == {number} """
+            query = f""" DELETE FROM applications WHERE номер == {number} """
             cursor.execute(query)
             db.commit()
+

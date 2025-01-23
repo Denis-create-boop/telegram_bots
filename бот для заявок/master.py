@@ -1,23 +1,27 @@
 from admin import *
-from table import Table
+from table import Applications
 
 
-id_master = 5276576528_0
+id_master = 5276576528
 
 
 def master(message):
 
     @bot.message_handler(func=lambda message: str(message.text).lower() == "start")
     def wellcome(message):
+        global photo
         chat_id = message.chat.id
         keyboard = telebot.types.ReplyKeyboardMarkup()
 
         for button in master_buttons:
             button_save = telebot.types.InlineKeyboardButton(text=button)
             keyboard.add(button_save)
-
+        with open("images/avatar_main.jpg", "rb") as photo:
+            bot.send_media_group(chat_id, [InputMediaPhoto(photo)])
         bot.send_message(
-            chat_id, f"Добро пожаловать в бот ДВП Воронеж ЦО", reply_markup=keyboard
+            chat_id,
+            "Добро пожаловать в бот ДВП Воронеж ЦО",
+            reply_markup=keyboard
         )
 
     wellcome(message)
@@ -45,7 +49,7 @@ def master(message):
             chat_id = message.chat.id
             try:
                 NUM = int(message.text)
-                objects = Table()
+                objects = Applications()
                 objects.set_new_status(NUM, "Невозможно решить проблему")
                 bot.send_message(chat_id, "Хорошо, спасибо я передам")
             except:
@@ -54,7 +58,7 @@ def master(message):
         def checking_status(message):
             global user_id, master_buttons
 
-            objects = Table()
+            objects = Applications()
             chat_id = message.chat.id
             try:
                 NUM = int(message.text)
@@ -74,17 +78,17 @@ def master(message):
                         f"Ваша заявка под номером {NUM} - Выполнена\nПожалуйста оцените качество работы от 1 до 10",
                         reply_markup=grade_keyboard,
                     )
-                    keyboard = telebot.types.ReplyKeyboardMarkup()
-
-                    for button in master_buttons:
-                        button_save = telebot.types.InlineKeyboardButton(text=button)
-                        keyboard.add(button_save)
-
-                    bot.send_message(
-                        chat_id,
-                        f"Добро пожаловать в бот ДВП Воронеж ЦО",
-                        reply_markup=keyboard,
-                    )
+                    # keyboard = telebot.types.ReplyKeyboardMarkup()
+                    #
+                    # for button in master_buttons:
+                    #    button_save = telebot.types.InlineKeyboardButton(text=button)
+                    #    keyboard.add(button_save)
+                    #
+                    # bot.send_message(
+                    #    chat_id,
+                    #    f"Добро пожаловать в бот ДВП Воронеж ЦО",
+                    #    reply_markup=keyboard,
+                    # )
                     objects.set_new_status(NUM, "Выполнена")
                     bot.register_next_step_handler(message, wellcome)
                 else:
@@ -114,7 +118,7 @@ def master(message):
                 "Спасибо за честную оценку, мы постораемся улучшить наше обслуживание",
                 reply_markup=keyboard,
             )
-        objects = Table()
+        objects = Applications()
         user_id = objects.get_user_id(old_number)
         objects.set_grade(old_number, grade)
         bot.register_next_step_handler(message, wellcome)
