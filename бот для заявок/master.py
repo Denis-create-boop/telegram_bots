@@ -1,13 +1,16 @@
 from admin import *
-from table import Applications
+from my_database import Applications
 
 
-id_master = 5276576528
+id_master = 5276576528_0
 
 
 def master(message):
 
-    @bot.message_handler(func=lambda message: str(message.text).lower() == "start")
+    @bot.message_handler(
+        func=lambda message: str(message.text).lower() == "start"
+        or message.text == "/start"
+    )
     def wellcome(message):
         global photo
         chat_id = message.chat.id

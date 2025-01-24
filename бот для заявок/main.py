@@ -10,7 +10,10 @@ from master import master, id_master
 users = None
 
 
-@bot.message_handler(func=lambda message: str(message.text).lower() == "start")
+@bot.message_handler(
+    func=lambda message: str(message.text).lower() == "start"
+    or message.text == "/start"
+)
 def wellcome(message):
     global id_user
     chat_id = message.chat.id
@@ -81,15 +84,29 @@ def save_application(message):
     else:
         chat_id = message.chat.id
         users = chat_id
-        name = message.text
-        objects = Applications(name, application, "в ожидании", chat_id)
-        number = objects.write_application()
-        bot.send_message(
-            chat_id,
-            f"""Ваша заявка отправлена специалисту номер вашей заявки {number}\n
+        text = message.text
+        if (
+            text not in user_buttons
+            and text not in admin_buttons
+            and text not in master_buttons
+        ):
+            name = message.text
+            objects = Applications(
+                name, seves_problems[application], "в ожидании", chat_id
+            )
+            number = objects.write_application()
+            bot.send_message(
+                chat_id,
+                f"""Ваша заявка отправлена специалисту номер вашей заявки {number}\n
 Вы можете следить за статусом выполнения в этом боте""",
-        )
-        send_master(name, number, chat_id)
+            )
+            send_master(name, number, chat_id)
+        else:
+
+            bot.send_message(
+                chat_id,
+                "Введен неправильный логин\nПожалуйста проверьте правильность написания",
+            )
 
 
 # функция для отправки заявки мастеру
