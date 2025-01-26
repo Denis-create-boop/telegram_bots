@@ -2,7 +2,11 @@ from admin import *
 from my_database import Applications
 
 
+<<<<<<< HEAD
 id_master = []
+=======
+id_master = "some_id"
+>>>>>>> 1cc89ed0a48198e3fb9abdf8f70ff32f3e40cf99
 
 
 def master(message):

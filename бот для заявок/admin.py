@@ -3,11 +3,15 @@ from my_database import Applications
 from telebot.types import InputMediaPhoto
 
 
-TOKEN = "8018531675:AAHnItWE4t-ujEqPFe-0vCaFggdeY017re0"
+TOKEN = "some_token"
 bot = telebot.TeleBot(TOKEN)
 
 
+<<<<<<< HEAD
 id_admin = []
+=======
+id_admin = some_id
+>>>>>>> 1cc89ed0a48198e3fb9abdf8f70ff32f3e40cf99
 user_id = None
 old_number = 0
 
