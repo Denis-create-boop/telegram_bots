@@ -10,6 +10,19 @@ from master import master, id_master
 users = None
 
 
+def guest(message):
+    keyboard = telebot.types.ReplyKeyboardMarkup()
+    chat_id = message.chat.id
+    for button in user_buttons:
+        button_save = telebot.types.InlineKeyboardButton(text=button)
+        keyboard.add(button_save)
+    with open("images/avatar_main.jpg", "rb") as photo:
+        bot.send_media_group(chat_id, [InputMediaPhoto(photo)])
+    bot.send_message(
+        chat_id, text="Добро пожаловать в бот ДВП Воронеж ЦО", reply_markup=keyboard
+    )
+
+
 @bot.message_handler(
     func=lambda message: str(message.text).lower() == "start"
     or message.text == "/start"
@@ -18,25 +31,32 @@ def wellcome(message):
     global id_user
     chat_id = message.chat.id
 
-    if chat_id == id_admin:
+    if chat_id in id_admin:
         id_user = id_admin
-        admin(message)
-
-    elif chat_id == id_master:
-        id_user = id_master
-        master(message)
-
-    else:
         keyboard = telebot.types.ReplyKeyboardMarkup()
 
-        for button in user_buttons:
+        for button in how_to_inner_buttons:
             button_save = telebot.types.InlineKeyboardButton(text=button)
             keyboard.add(button_save)
         with open("images/avatar_main.jpg", "rb") as photo:
             bot.send_media_group(chat_id, [InputMediaPhoto(photo)])
         bot.send_message(
-            chat_id, text="Добро пожаловать в бот ДВП Воронеж ЦО", reply_markup=keyboard
+            chat_id, text="Добро пожаловать в бот ДВП Воронеж ЦО\nКак вы хотите войти", reply_markup=keyboard
         )
+        bot.register_next_step_handler(message, how_to_inner)
+
+    elif chat_id in id_master:
+        id_user = id_master
+        master(message)
+
+    else:
+        guest(message)
+
+def how_to_inner(message):
+    if message.text == "Как администратор":
+        admin(message)
+    else:
+        guest(message)
 
 
 @bot.message_handler(func=lambda message: message.text in user_handlers)
@@ -129,6 +149,7 @@ def send_master(name, number, id_quest):
 
     @bot.message_handler(func=lambda message: message.text in answers.values())
     def send_answer(message):
+        global id_master
         answer = message.text
         objects = Applications()
 
@@ -154,7 +175,7 @@ def send_master(name, number, id_quest):
 
         if answer == "Заявку принял":
             objects.set_new_status(number, "Передана специалисту")
-            objects.set_master_id(number, id_master)
+            objects.set_master_id(id_master, number)
             bot.send_message(
                 id_quest,
                 "Вашу заявку приняли в работу",

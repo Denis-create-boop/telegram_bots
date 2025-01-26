@@ -1,7 +1,7 @@
 import mysql.connector
 from datetime import datetime
 
-SECRET_KEY = "LiZa04031994"
+SECRET_KEY = "your_key"
 
 db = mysql.connector.connect(host='localhost', 
                             database='BotBase',
@@ -27,7 +27,7 @@ class Applications:
         # создание таблицы в бд
         query = """ CREATE TABLE IF NOT EXISTS applications(id INTEGER, дата VARCHAR(50), 
         время VARCHAR(50), номер INTEGER, логин VARCHAR(50), проблема VARCHAR(50), статус VARCHAR(50), 
-        оценка INTEGER, user_id BIGINT, master_id BIGITN) """
+        оценка INTEGER, user_id BIGINT, master_id BIGINT) """
         cursor.execute(query)
         db.commit()
 
@@ -72,9 +72,9 @@ class Applications:
         return cursor
 
     # функция для закрепления заявки за мастером
-    def set_master_id(self, number, id_master):
+    def set_master_id(self, id_master, number):
         query = """UPDATE applications SET master_id = %s WHERE номер = %s"""
-        cursor.execute(query, (number, id_master,))
+        cursor.execute(query, (id_master, number,))
         db.commit()
 
     # функция для просмотра мастером своих заявок

@@ -7,7 +7,7 @@ TOKEN = "8018531675:AAHnItWE4t-ujEqPFe-0vCaFggdeY017re0"
 bot = telebot.TeleBot(TOKEN)
 
 
-id_admin = 5276576528
+id_admin = []
 user_id = None
 old_number = 0
 
@@ -17,12 +17,6 @@ admin_buttons = [
     "изменить статус заявки",
     "удалить заявку",
     "посмотреть оценку заявки",
-    "📩Не могу зайти в почту📩",
-    "☁️Не могу зайти на портал☁️",
-    "Не работает комп🤬🤬",
-    "🔥🔥🤯Очень срочно ничего не работает🤯🔥🔥",
-    "Другое",
-    "Посмотреть статус заявки👀",
 ]
 
 user_buttons = [
@@ -43,6 +37,8 @@ user_handlers = [
     "🔥🔥🤯Очень срочно ничего не работает🤯🔥🔥",
     "Другое",
 ]
+
+how_to_inner_buttons = ["Как пользователь", "Как администратор"]
 
 master_buttons = [
     "start",
@@ -77,12 +73,14 @@ seves_problems = {
     "Невозможно решить проблему": "Невозможно решить проблему",
 }
 
+
 # admin
 def admin(message):
 
     @bot.message_handler(
         func=lambda message: str(message.text).lower() == "start"
         or message.text == "/start"
+        or message.text == "Как администратор"
     )
     def wellcome(message):
 
@@ -96,9 +94,7 @@ def admin(message):
         with open("images/avatar_main.jpg", "rb") as photo:
             bot.send_media_group(chat_id, [InputMediaPhoto(photo)])
         bot.send_message(
-            chat_id,
-            "Добро пожаловать в бот ДВП Воронеж ЦО",
-            reply_markup=keyboard
+            chat_id, "Добро пожаловать в бот ДВП Воронеж ЦО", reply_markup=keyboard
         )
 
     # функция для просмотра оценки заявки
@@ -133,7 +129,18 @@ def admin(message):
         try:
             objects = Applications()
             objects = objects.show_all(month)
-            ls_answer = ["id", "дата", "время", "номер заявки", "логин", "проблема", "статус", "оценка", "пользователь", "id_master"]
+            ls_answer = [
+                "id",
+                "дата",
+                "время",
+                "номер заявки",
+                "логин",
+                "проблема",
+                "статус",
+                "оценка",
+                "пользователь",
+                "id_master",
+            ]
             ls_send = []
             for row in objects:
                 send = ""
@@ -181,7 +188,9 @@ def admin(message):
                 num = message.text
                 old_number = num
                 old_status = objects.get_status(num)
-                bot.send_message(chat_id, "Укажите статус заявки", reply_markup=keyboard)
+                bot.send_message(
+                    chat_id, "Укажите статус заявки", reply_markup=keyboard
+                )
                 bot.register_next_step_handler(message, set_new_status)
 
         def set_new_status(message):

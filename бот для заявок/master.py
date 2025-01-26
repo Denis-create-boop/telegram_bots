@@ -2,7 +2,7 @@ from admin import *
 from my_database import Applications
 
 
-id_master = 5276576528_0
+id_master = []
 
 
 def master(message):
@@ -117,17 +117,7 @@ def master(message):
                         f"Ваша заявка под номером {NUM} - Выполнена\nПожалуйста оцените качество работы от 1 до 10",
                         reply_markup=grade_keyboard,
                     )
-                    # keyboard = telebot.types.ReplyKeyboardMarkup()
-                    #
-                    # for button in master_buttons:
-                    #    button_save = telebot.types.InlineKeyboardButton(text=button)
-                    #    keyboard.add(button_save)
-                    #
-                    # bot.send_message(
-                    #    chat_id,
-                    #    f"Добро пожаловать в бот ДВП Воронеж ЦО",
-                    #    reply_markup=keyboard,
-                    # )
+
                     objects.set_new_status(NUM, "Выполнена")
                     bot.register_next_step_handler(message, wellcome)
                 else:
