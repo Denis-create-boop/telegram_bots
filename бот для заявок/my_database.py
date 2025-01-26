@@ -1,7 +1,7 @@
 import mysql.connector
 from datetime import datetime
 
-SECRET_KEY = "LiZa04031994"
+SECRET_KEY = "some_key"
 
 db = mysql.connector.connect(host='localhost', 
                             database='BotBase',
