@@ -22,9 +22,7 @@ def master(message):
         with open("images/avatar_main.jpg", "rb") as photo:
             bot.send_media_group(chat_id, [InputMediaPhoto(photo)])
         bot.send_message(
-            chat_id,
-            "Добро пожаловать в бот ДВП Воронеж ЦО",
-            reply_markup=keyboard
+            chat_id, "Добро пожаловать в бот ДВП Воронеж ЦО", reply_markup=keyboard
         )
 
     wellcome(message)
@@ -39,6 +37,13 @@ def master(message):
                 bot.send_message(chat_id, "Введите номер выполненной заявки")
                 bot.register_next_step_handler(message, checking_status)
 
+            elif text == "посмотреть свои заявки":
+                bot.send_message(
+                    chat_id,
+                    "Введите ноиер месяца за который хотитте посмотреть свои заявки",
+                )
+                bot.register_next_step_handler(message, show_master_applications)
+
             elif text == "start":
                 bot.register_next_step_handler(message, wellcome)
 
@@ -47,6 +52,37 @@ def master(message):
                 bot.register_next_step_handler(message, unpossible)
             else:
                 bot.send_message(chat_id, "Хорошо, спасибо за работу")
+
+        def show_master_applications(message):
+            objects = Applications()
+            chat_id = message.chat.id
+            number = message.text
+            answer = objects.get_master_applications(chat_id, number)
+            ls_answer = [
+                "id",
+                "дата",
+                "время",
+                "номер заявки",
+                "логин",
+                "проблема",
+                "статус",
+                "оценка",
+                "пользователь",
+                "id_master",
+            ]
+            ls_send = []
+            try:
+                for row in answer:
+                    send = ""
+                    for i in range(len(ls_answer)):
+                        send += f"{ls_answer[i]}: {row[i]}\n"
+                    ls_send.append(send)
+                for i in ls_send:
+                    bot.send_message(chat_id, i)
+            except:
+                bot.send_message(
+                    chat_id, "В базе данных за этот месяц нет ниодной заявки"
+                )
 
         def unpossible(message):
             chat_id = message.chat.id

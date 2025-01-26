@@ -154,6 +154,7 @@ def send_master(name, number, id_quest):
 
         if answer == "Заявку принял":
             objects.set_new_status(number, "Передана специалисту")
+            objects.set_master_id(number, id_master)
             bot.send_message(
                 id_quest,
                 "Вашу заявку приняли в работу",

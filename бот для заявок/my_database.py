@@ -1,7 +1,7 @@
 import mysql.connector
 from datetime import datetime
 
-SECRET_KEY = "some_key"
+SECRET_KEY = "LiZa04031994"
 
 db = mysql.connector.connect(host='localhost', 
                             database='BotBase',
@@ -27,7 +27,7 @@ class Applications:
         # создание таблицы в бд
         query = """ CREATE TABLE IF NOT EXISTS applications(id INTEGER, дата VARCHAR(50), 
         время VARCHAR(50), номер INTEGER, логин VARCHAR(50), проблема VARCHAR(50), статус VARCHAR(50), 
-        оценка INTEGER, user_id BIGINT) """
+        оценка INTEGER, user_id BIGINT, master_id BIGITN) """
         cursor.execute(query)
         db.commit()
 
@@ -46,12 +46,12 @@ class Applications:
         # заполнение таблицы в бд
         def write(id, user, number, application, status, user_id):
             global cursor
-            data = str(datetime.now().split())
+            data = str(datetime.now()).split()
             day = data[0]
             time = data[1][:8]
             query = """INSERT INTO applications
-                        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-            insert_payments = (id, day, time, number, user, application, status, None, user_id)
+                        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            insert_payments = (id, day, time, number, user, application, status, None, user_id, None)
 
             cursor.execute(query, insert_payments)
 
@@ -65,12 +65,24 @@ class Applications:
 
         return number
 
-    # получаем все заявки
-    def show_all(self):
-
-        query = """ SELECT * FROM applications """
-        cursor.execute(query)
+    # получаем все заявки за определенный период
+    def show_all(self, month):
+        query = """ SELECT * FROM applications WHERE MONTH(дата) = %s """
+        cursor.execute(query, (month, ))
         return cursor
+
+    # функция для закрепления заявки за мастером
+    def set_master_id(self, number, id_master):
+        query = """UPDATE applications SET master_id = %s WHERE номер = %s"""
+        cursor.execute(query, (number, id_master,))
+        db.commit()
+
+    # функция для просмотра мастером своих заявок
+    def get_master_applications(self, master_id, month):
+        query = """SELECT * FROM applications WHERE master_id = %s AND MONTH(дата) = %s"""
+        cursor.execute(query, (master_id, month,))
+        return cursor
+
 
     # функция для получения оценки заявки
     def get_grade(self, number):

@@ -46,6 +46,7 @@ user_handlers = [
 
 master_buttons = [
     "start",
+    "посмотреть свои заявки",
     "Заявку выполнил",
     "Передал заявку другому специалисту",
     "Невозможно решить проблему",
@@ -53,6 +54,7 @@ master_buttons = [
 
 master_handlers = [
     "start",
+    "посмотреть свои заявки",
     "Заявку выполнил",
     "Передал заявку другому специалисту",
     "Невозможно решить проблему",
@@ -122,21 +124,26 @@ def admin(message):
     @bot.message_handler(func=lambda message: message.text == "👁Посмотреть все заявки👁")
     def show_all(message):
         chat_id = message.chat.id
+        bot.send_message(chat_id, "Выберите месяц за который хотите посмотреть заявки")
+        bot.register_next_step_handler(message, show_for_month)
+
+    def show_for_month(message):
+        chat_id = message.chat.id
+        month = message.text
         try:
             objects = Applications()
-            objects = objects.show_all()
-            ls_answer = ["id", "дата", "время", "номер заявки", "логин", "проблема", "статус", "оценка", "пользователь"]
+            objects = objects.show_all(month)
+            ls_answer = ["id", "дата", "время", "номер заявки", "логин", "проблема", "статус", "оценка", "пользователь", "id_master"]
             ls_send = []
             for row in objects:
                 send = ""
                 for i in range(len(ls_answer)):
                     send += f"{ls_answer[i]}: {row[i]}\n"
-
                 ls_send.append(send)
             for i in ls_send:
                 bot.send_message(chat_id, i)
         except:
-            bot.send_message(chat_id, "В базе данных пока нет ниодной заявки")
+            bot.send_message(chat_id, "В базе данных за этот месяц нет ниодной заявки")
 
     # функция для изменения статуса заявки
     @bot.message_handler(func=lambda message: message.text == "изменить статус заявки")

@@ -12,8 +12,9 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor()
 
-query = """SELECT * FROM applications WHERE номер = %s"""
-l = (1, )
-cursor.execute(query, l)
+query = """SELECT * FROM applications WHERE MONTH(дата) = 5"""
+num = 5
+l = ()
+cursor.execute(query)
 for row in cursor:
     print(row)
