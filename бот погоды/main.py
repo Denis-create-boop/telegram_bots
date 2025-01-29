@@ -6,7 +6,7 @@ import requests
 
 
 
-TOKEN = "7742227860:AAGl0VYzj7JlKjTedCl9xSzrs_HA1kJfK-4"
+TOKEN = "your_tocken"
 apiKey = 'd20a0002a5a9c0635b318c22a77aebae'
 
 bot = Bot(TOKEN)
