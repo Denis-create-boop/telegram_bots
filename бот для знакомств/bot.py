@@ -222,7 +222,7 @@ dialog.user = {}
 
 chatgpt = ChatGptService(token="gpt:1EprHW2fyrbq2MNxmQbRJFkblB3TJuC8zKn6VeGdT0tnEKbw")
 
-app = ApplicationBuilder().token("7451810995:AAHbfdoXLlbTSVYwi1RjxJbV5F5qVlOBmrM").build()
+app = ApplicationBuilder().token('your_tocken').build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("gpt", gpt))
 app.add_handler(CommandHandler("date", date))
