@@ -10,11 +10,11 @@ from telegram.ext import (
 )
 
 # токен бота (имя пользователя в тг @ChecksIMEIbot)
-TELEGRAM_BOT_TOKEN = "7776794505:AAGiXHAa_Q1-1GnejsitJVl0-v30KRiDQVo"
+TELEGRAM_BOT_TOKEN = ""
 
 
 # Токен API Sandbox
-API_TOKEN = "e4oEaZY1Kom5OXzybETkMlwjOCy3i8GSCGTHzWrhd4dc563b"
+API_TOKEN = ""
 
 
 # Настройка логирования
